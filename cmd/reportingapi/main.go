@@ -3,9 +3,7 @@ package main
 import (
 	"github.com/gin-gonic/gin"
 	"twitch_chat_analysis/internal/controller"
-	"twitch_chat_analysis/internal/processor"
 	"twitch_chat_analysis/internal/storage"
-	"twitch_chat_analysis/internal/stream"
 )
 
 func main() {
@@ -21,19 +19,9 @@ func main() {
 		panic(err)
 	}
 
-	messagesStream, err := stream.NewRabbitMQ()
-	if err != nil {
-		panic(err)
-	}
+	ctrl := controller.NewReport(messagesStore)
 
-	ctrl := controller.New(messagesStream)
-
-	messageProcessor := processor.New(messagesStore, messagesStream)
-
-	// separate goroutine to process messages
-	go messageProcessor.Start()
-
-	r.POST("/message", ctrl.Receive)
+	r.GET("/message/list", ctrl.ListMessages)
 
 	r.Run()
 }
