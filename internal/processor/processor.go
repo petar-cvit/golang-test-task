@@ -21,6 +21,8 @@ func New(messagesStorage storage.Messages, stream stream.Receiver) Processor {
 }
 
 func (p Processor) Start() {
+	fmt.Println("started processing messages...")
+
 	messagesStream, err := p.stream.GetMessages()
 	if err != nil {
 		panic(err)
